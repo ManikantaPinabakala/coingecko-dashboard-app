@@ -38,34 +38,28 @@ npm run dev
     - You can hit `o + enter` or visit `http://localhost:5173` to view the app on you browser.
 
 ## 🛠️ Tech Stack and Architecture
+
 - `Vite + React`: The core library for building the UI. Vite provides a quick development server and optimized builds.
 
-- `TypeScript`: Chosen for ensuring type safety throughout the codebase, reducing bugs and improving maintainability.
+- `TypeScript`: Ensures type safety throughout the codebase, reducing bugs and improving maintainability.
 
-- `Tailwind CSS`: A CSS framework for rapid and consistent styling.
-
-- `Shadcn/UI`: A collection of reusable UI components that are built on top of Tailwind CSS and Radix UI primitives.
+- `Tailwind CSS & Shadcn/UI`: Used for reusable components, rapid and consistent styling.
 
 - `React Router`: Manages client-side routing, enabling navigation between the Markets and Trending pages without a full page reload.
 
-- `React Query (TanStack Query)`: A powerful data-fetching library that handles server state, caching, and background data synchronization. It's crucial for the performance of this app.
+- `React Query`: Handles all server state management, including caching and data synchronization, making the app feel fast and responsive.
 
-- `Axios`: A promise-based HTTP client used to make API calls to the CoinGecko API.
+- `Axios`: A promise-based HTTP client for making API calls.
 
-- `Netlify`: An open-source hosting platform for deployment of web-applications.
+The application uses a component-based architecture with React Router for navigation. Data fetching is centrally managed by React Query, which decouples data from the UI and improves performance.
 
-The application's architecture is a standard React single-page application (SPA). It follows a component-based structure where the UI is broken down into reusable components. Data fetching is centralized using React Query, which caches API responses and provides a consistent state management layer for server data.
+## 💡 Design Patterns
 
-## 🧱 Design Patterns and Rationale
-- Adapter Pattern: This pattern is used to decouple the UI components from the raw API response structure.
+**Adapter Pattern**: We use this pattern to transform raw data from the CoinGecko API into a standardized format before it reaches the UI. This decouples the frontend from the backend and makes the app more resilient to API changes.
 
-  - Rationale: The CoinGecko API can return inconsistent or deeply nested data, especially across different endpoints (e.g., /trending vs. /markets). Adapters transform this raw data into a standardized format, ensuring that UI components always receive the data they expect. If the API changes, only the adapter functions need to be updated, leaving the rest of the application's logic untouched.
+**Container/Presentational Pattern**: This separates logic from UI. Components like Markets and Trending handle data fetching and state (Containers), while components like HighlightCard and AppLoader simply display data (Presentational).
 
-- Container/Presentational Pattern: The Markets and Trending pages act as Containers by handling data fetching and business logic (e.g., sorting, filtering, error handling), while components like HighlightCard and CoinDetailDialog are Presentational, focusing solely on rendering the UI based on the props they receive.
-
-  - Rationale: This separation of concerns improves code organization and reusability. The UI components are simpler, and the data-fetching logic is isolated, making it easier to test and maintain.
-
-## 📝 Assumptions, Limitations, and Future Improvements
+## 📝 Limitations and Improvements
 
 - `Assumptions`:
 
@@ -73,18 +67,18 @@ The application's architecture is a standard React single-page application (SPA)
 
 - `Limitations`:
 
-  - The search functionality is basic and relies on CoinGecko's ids parameter, which requires a precise coin ID. It does not support fuzzy or name-based searching on the API side.
+  - Search functionality is basic, relying on exact coin IDs.
 
-  - The market data table is paginated, it only shows one page of results (20 coins) at a time and lacks an advanced infinite scroll feature.
+  - The market table is paginated and lacks advanced features like infinite scrolling.
 
   - The current sorting logic is client-side, which is inefficient for large datasets.
 
 - `Future Improvements`:
 
-  - **Server-side Sorting/Pagination**: Implement server-side sorting and pagination for the market table to handle larger datasets more efficiently.
+  - Implement server-side sorting and pagination for better performance with large datasets.
 
-  - **Enhanced Search**: Integrate a more robust search endpoint or a server-side search mechanism for a better user experience.
+  - Enhance search with fuzzy matching.
 
-  - **Time-Series Charts**: Add interactive charts (e.g., using a library like Chart.js or Recharts) to display historical price data for each coin.
+  - Add time-series charts to display historical price data.
 
-  - **Real-time Updates**: Use WebSockets or a similar technology to get real-time price updates instead of relying on staleTime and refetching.
+  - Implement real-time price updates using WebSockets.

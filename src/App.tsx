@@ -13,19 +13,22 @@ import "./App.css";
 function App() {
   return (
     <Router>
-      <nav className="flex justify-center items-center space-x-8 p-4 bg-gray-100 rounded-lg shadow-sm">
-        <Link
-          to="/markets"
-          className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
-        >
-          Markets
-        </Link>
-        <Link
-          to="/trending"
-          className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
-        >
-          Trending
-        </Link>
+      <nav className="flex justify-between items-center space-x-8 py-4 px-16 bg-gray-100 rounded-lg shadow-sm">
+        <h1 className="text-2xl font-bold">CoinGecko Clone</h1>
+        <div className="flex space-x-8">
+          <Link
+            to="/markets"
+            className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
+            Markets
+          </Link>
+          <Link
+            to="/trending"
+            className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
+          >
+            Trending
+          </Link>
+        </div>
       </nav>
 
       <Routes>

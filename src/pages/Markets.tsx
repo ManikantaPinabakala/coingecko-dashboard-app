@@ -15,6 +15,7 @@ import { formatCurrency, formatNumber } from "@/utils/helperFunctions";
 import { useDebounce } from "@/hooks/useDebounce";
 import CoinDetailDialog from "@/pages/CoinDetailDialog";
 import { ArrowDownNarrowWide, ArrowDownWideNarrow } from "lucide-react";
+import { AppLoader } from "@/components/shared/Loader";
 
 type SortKey =
   | "current_price"
@@ -33,14 +34,42 @@ export default function Markets() {
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["markets", page, debouncedSearch],
     queryFn: () => getMarkets(page, debouncedSearch),
+    staleTime: 5 * 60 * 1000,
   });
 
-  if (isLoading && debouncedSearch) return <p>Searching...</p>;
-  if (isLoading) return <p>Loading markets...</p>;
-  if (isError) return <p>Failed to fetch market data. Please try again.</p>;
+  if (isLoading && debouncedSearch) {
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 gap-4">
+        <AppLoader />
+        <p>Searching...</p>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 gap-4">
+        <AppLoader />
+        <p>Loading market data...</p>
+      </div>
+    );
+  }
+
+  if (isError) {
+    console.log("Error fetching market data:", error);
+
+    return (
+      <div className="flex flex-col items-center justify-center mt-20 gap-4">
+        <p className="text-lg text-red-500">
+          Failed to fetch market data. Please try again.
+        </p>
+        <Button onClick={() => refetch()}>Retry</Button>
+      </div>
+    );
+  }
 
   const handleSort = (column: SortKey) => {
     if (sortColumn === column) {
@@ -71,13 +100,6 @@ export default function Markets() {
     : [];
 
   const renderTableHeader = () => {
-    const sortDisplayIcon =
-      sortDirection === "asc" ? (
-        <ArrowDownNarrowWide size={14} />
-      ) : sortDirection === "desc" ? (
-        <ArrowDownWideNarrow size={14} />
-      ) : null;
-
     return (
       <TableHeader>
         <TableRow>
@@ -89,7 +111,12 @@ export default function Markets() {
           >
             <div className="flex items-center gap-1">
               Price
-              {sortColumn === "current_price" && sortDisplayIcon}
+              {sortColumn === "current_price" &&
+                (sortDirection === "asc" ? (
+                  <ArrowDownNarrowWide size={14} />
+                ) : (
+                  <ArrowDownWideNarrow size={14} />
+                ))}
             </div>
           </TableHead>
           <TableHead
@@ -97,8 +124,13 @@ export default function Markets() {
             className="cursor-pointer"
           >
             <div className="flex items-center gap-1">
-              24h Change
-              {sortColumn === "price_change_percentage_24h" && sortDisplayIcon}
+              24h Change %
+              {sortColumn === "price_change_percentage_24h" &&
+                (sortDirection === "asc" ? (
+                  <ArrowDownNarrowWide size={14} />
+                ) : (
+                  <ArrowDownWideNarrow size={14} />
+                ))}
             </div>
           </TableHead>
           <TableHead
@@ -107,7 +139,12 @@ export default function Markets() {
           >
             <div className="flex items-center gap-1">
               Market Cap
-              {sortColumn === "market_cap" && sortDisplayIcon}
+              {sortColumn === "market_cap" &&
+                (sortDirection === "asc" ? (
+                  <ArrowDownNarrowWide size={14} />
+                ) : (
+                  <ArrowDownWideNarrow size={14} />
+                ))}
             </div>
           </TableHead>
           <TableHead
@@ -116,7 +153,12 @@ export default function Markets() {
           >
             <div className="flex items-center gap-1">
               24h Volume
-              {sortColumn === "total_volume" && sortDisplayIcon}
+              {sortColumn === "total_volume" &&
+                (sortDirection === "asc" ? (
+                  <ArrowDownNarrowWide size={14} />
+                ) : (
+                  <ArrowDownWideNarrow size={14} />
+                ))}
             </div>
           </TableHead>
         </TableRow>
@@ -141,41 +183,52 @@ export default function Markets() {
         {renderTableHeader()}
 
         <TableBody>
-          {sortedData.map((coin: any) => (
-            <TableRow
-              key={coin.id}
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => setSelectedCoin(coin)}
-            >
-              <TableCell align="left">{coin.market_cap_rank}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  <img src={coin.image} alt={coin.name} className="w-5 h-5" />
-                  {coin.name} ({coin.symbol.toUpperCase()})
-                </div>
-              </TableCell>
-              <TableCell align="left">
-                ${coin.current_price.toLocaleString()}
-              </TableCell>
-              <TableCell
-                align="left"
-                className={
-                  coin.price_change_percentage_24h >= 0
-                    ? "text-green-600"
-                    : "text-red-600"
-                }
+          {sortedData.length > 0 ? (
+            sortedData.map((coin: any) => (
+              <TableRow
+                key={coin.id}
+                className="cursor-pointer hover:bg-gray-50"
+                onClick={() => setSelectedCoin(coin)}
               >
-                {formatNumber(coin.price_change_24h)} (
-                {formatNumber(coin.price_change_percentage_24h)}%)
-              </TableCell>
-              <TableCell align="left">
-                {formatCurrency(coin.market_cap)}
-              </TableCell>
-              <TableCell align="left">
-                {formatCurrency(coin.total_volume)}
+                <TableCell align="left">{coin.market_cap_rank}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <img src={coin.image} alt={coin.name} className="w-5 h-5" />
+                    {coin.name} ({coin.symbol.toUpperCase()})
+                  </div>
+                </TableCell>
+                <TableCell align="left">
+                  ${coin.current_price.toLocaleString()}
+                </TableCell>
+                <TableCell
+                  align="left"
+                  className={
+                    coin.price_change_percentage_24h >= 0
+                      ? "text-green-600"
+                      : "text-red-600"
+                  }
+                >
+                  {formatNumber(coin.price_change_24h)} (
+                  {formatNumber(coin.price_change_percentage_24h)}%)
+                </TableCell>
+                <TableCell align="left">
+                  {formatCurrency(coin.market_cap)}
+                </TableCell>
+                <TableCell align="left">
+                  {formatCurrency(coin.total_volume)}
+                </TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell
+                colSpan={6}
+                className="text-center py-4 font-bold text-xl"
+              >
+                No coins found.
               </TableCell>
             </TableRow>
-          ))}
+          )}
         </TableBody>
       </Table>
 

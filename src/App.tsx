@@ -13,11 +13,19 @@ import "./App.css";
 function App() {
   return (
     <Router>
-      <nav className="mb-5">
-        <Link to="/markets" className="mr-3">
+      <nav className="flex justify-center items-center space-x-8 p-4 bg-gray-100 rounded-lg shadow-sm">
+        <Link
+          to="/markets"
+          className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
+        >
           Markets
         </Link>
-        <Link to="/trending">Trending</Link>
+        <Link
+          to="/trending"
+          className="text-lg text-gray-600 hover:text-gray-900 font-medium transition-colors"
+        >
+          Trending
+        </Link>
       </nav>
 
       <Routes>

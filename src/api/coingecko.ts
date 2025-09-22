@@ -13,9 +13,9 @@ export const getMarkets = async (page: number = 1, search: string = "") => {
     params: {
       vs_currency: "usd",
       order: "market_cap_desc",
-      per_page: 20, // adjust page size
+      per_page: 20,
       page,
-      price_change_percentage: "24h",
+      price_change_percentage: "24h,7d,30d",
       sparkline: false,
     },
   });

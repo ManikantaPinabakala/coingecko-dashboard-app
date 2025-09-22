@@ -1,9 +1,10 @@
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { formatCurrency, formatNumber } from "@/utils/helperFunctions";
+import type { CoinData } from "@/types/typeDefinitions";
+import { formatCurrency, formatNumber } from "@/helpers/helperFunctions";
 
 interface CoinDetailDialogProps {
-  selectedCoin: any;
-  setSelectedCoin: (coin: any | null) => void;
+  selectedCoin: CoinData | null;
+  setSelectedCoin: (coin: CoinData | null) => void;
 }
 
 export default function CoinDetailDialog({
@@ -31,11 +32,11 @@ export default function CoinDetailDialog({
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-y-4 gap-x-10">
               <div className="flex flex-col">
                 <p className="text-gray-500 text-sm font-medium">Price</p>
                 <p className="text-lg font-semibold">
-                  ${selectedCoin.current_price.toLocaleString()}
+                  ${selectedCoin.currentPrice.toLocaleString()}
                 </p>
               </div>
 
@@ -43,26 +44,26 @@ export default function CoinDetailDialog({
                 <p className="text-gray-500 text-sm font-medium">24h Change</p>
                 <p
                   className={`text-lg font-semibold ${
-                    selectedCoin.price_change_percentage_24h >= 0
+                    selectedCoin.priceChangePercentage24h >= 0
                       ? "text-green-600"
                       : "text-red-600"
                   }`}
                 >
-                  {formatNumber(selectedCoin.price_change_percentage_24h)}%
+                  {formatNumber(selectedCoin.priceChangePercentage24h)}%
                 </p>
               </div>
 
               <div className="flex flex-col">
                 <p className="text-gray-500 text-sm font-medium">Market Cap</p>
                 <p className="text-lg font-semibold">
-                  {formatCurrency(selectedCoin.market_cap)}
+                  {formatCurrency(selectedCoin.marketCap)}
                 </p>
               </div>
 
               <div className="flex flex-col">
                 <p className="text-gray-500 text-sm font-medium">24h Volume</p>
                 <p className="text-lg font-semibold">
-                  {formatCurrency(selectedCoin.total_volume)}
+                  {formatCurrency(selectedCoin.totalVolume)}
                 </p>
               </div>
             </div>

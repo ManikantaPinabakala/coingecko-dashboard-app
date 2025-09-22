@@ -5,8 +5,8 @@ import {
   Link,
   Navigate,
 } from "react-router-dom";
-import Markets from "./pages/Markets";
-import Trending from "./pages/Trending";
+import Markets from "./components/pages/Markets";
+import Trending from "./components/pages/Trending";
 
 import "./App.css";
 

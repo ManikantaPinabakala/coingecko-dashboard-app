@@ -1,9 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatNumber } from "@/utils/helperFunctions";
+import { formatNumber } from "@/helpers/helperFunctions";
 
 interface HighlightCardProps {
   title: string;
-  data: any[];
+  data: any[] | undefined;
   isLoading: boolean;
 }
 
@@ -68,22 +68,22 @@ export default function HighlightCard({
               </div>
 
               <div className="flex w-1/4 justify-end text-sm font-semibold">
-                {item.current_price
-                  ? `$${item.current_price.toLocaleString()}`
+                {item.currentPrice
+                  ? `$${item.currentPrice.toLocaleString()}`
                   : "N/A"}
               </div>
 
               <div
                 className={`flex w-1/4 justify-end text-sm font-semibold ${
-                  item.price_change_percentage_24h > 0
+                  item.priceChangePercentage24h > 0
                     ? "text-green-600"
-                    : item.price_change_percentage_24h < 0
+                    : item.priceChangePercentage24h < 0
                     ? "text-red-600"
                     : "text-gray-500"
                 }`}
               >
-                {item.price_change_percentage_24h
-                  ? `${formatNumber(item.price_change_percentage_24h)}%`
+                {item.priceChangePercentage24h
+                  ? `${formatNumber(item.priceChangePercentage24h)}%`
                   : "N/A"}
               </div>
             </li>

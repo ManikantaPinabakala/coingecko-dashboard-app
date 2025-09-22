@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getMarkets } from "../api/coingecko";
+import { getMarkets } from "../../api/coingecko";
 import {
   Table,
   TableBody,
@@ -11,30 +11,31 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { formatCurrency, formatNumber } from "@/utils/helperFunctions";
+import { formatCurrency, formatNumber } from "@/helpers/helperFunctions";
 import { useDebounce } from "@/hooks/useDebounce";
-import CoinDetailDialog from "@/pages/CoinDetailDialog";
+import CoinDetailDialog from "@/components/shared/CoinDetailDialog";
 import { ArrowDownNarrowWide, ArrowDownWideNarrow } from "lucide-react";
 import { AppLoader } from "@/components/shared/Loader";
+import { type CoinData } from "@/types/typeDefinitions";
 
 type SortKey =
-  | "current_price"
-  | "price_change_percentage_24h"
-  | "market_cap"
-  | "total_volume"
+  | "currentPrice"
+  | "priceChangePercentage24h"
+  | "marketCap"
+  | "totalVolume"
   | null;
 type SortDirection = "asc" | "desc" | null;
 
 export default function Markets() {
   const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
-  const [selectedCoin, setSelectedCoin] = useState<any | null>(null);
+  const [selectedCoin, setSelectedCoin] = useState<CoinData | null>(null);
   const [sortColumn, setSortColumn] = useState<SortKey>(null);
   const [sortDirection, setSortDirection] = useState<SortDirection>(null);
 
   const debouncedSearch = useDebounce(search, 500);
 
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery<CoinData[]>({
     queryKey: ["markets", page, debouncedSearch],
     queryFn: () => getMarkets(page, debouncedSearch),
     staleTime: 5 * 60 * 1000,
@@ -106,12 +107,12 @@ export default function Markets() {
           <TableHead>#</TableHead>
           <TableHead>Name</TableHead>
           <TableHead
-            onClick={() => handleSort("current_price")}
+            onClick={() => handleSort("currentPrice")}
             className="cursor-pointer"
           >
             <div className="flex items-center gap-1">
               Price
-              {sortColumn === "current_price" &&
+              {sortColumn === "currentPrice" &&
                 (sortDirection === "asc" ? (
                   <ArrowDownNarrowWide size={14} />
                 ) : (
@@ -120,12 +121,12 @@ export default function Markets() {
             </div>
           </TableHead>
           <TableHead
-            onClick={() => handleSort("price_change_percentage_24h")}
+            onClick={() => handleSort("priceChangePercentage24h")}
             className="cursor-pointer"
           >
             <div className="flex items-center gap-1">
               24h Change %
-              {sortColumn === "price_change_percentage_24h" &&
+              {sortColumn === "priceChangePercentage24h" &&
                 (sortDirection === "asc" ? (
                   <ArrowDownNarrowWide size={14} />
                 ) : (
@@ -134,12 +135,12 @@ export default function Markets() {
             </div>
           </TableHead>
           <TableHead
-            onClick={() => handleSort("market_cap")}
+            onClick={() => handleSort("marketCap")}
             className="cursor-pointer"
           >
             <div className="flex items-center gap-1">
               Market Cap
-              {sortColumn === "market_cap" &&
+              {sortColumn === "marketCap" &&
                 (sortDirection === "asc" ? (
                   <ArrowDownNarrowWide size={14} />
                 ) : (
@@ -148,12 +149,12 @@ export default function Markets() {
             </div>
           </TableHead>
           <TableHead
-            onClick={() => handleSort("total_volume")}
+            onClick={() => handleSort("totalVolume")}
             className="cursor-pointer"
           >
             <div className="flex items-center gap-1">
               24h Volume
-              {sortColumn === "total_volume" &&
+              {sortColumn === "totalVolume" &&
                 (sortDirection === "asc" ? (
                   <ArrowDownNarrowWide size={14} />
                 ) : (
@@ -184,13 +185,13 @@ export default function Markets() {
 
         <TableBody>
           {sortedData.length > 0 ? (
-            sortedData.map((coin: any) => (
+            sortedData.map((coin: CoinData) => (
               <TableRow
                 key={coin.id}
                 className="cursor-pointer hover:bg-gray-50"
                 onClick={() => setSelectedCoin(coin)}
               >
-                <TableCell align="left">{coin.market_cap_rank}</TableCell>
+                <TableCell align="left">{coin.marketCapRank}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <img src={coin.image} alt={coin.name} className="w-5 h-5" />
@@ -198,24 +199,24 @@ export default function Markets() {
                   </div>
                 </TableCell>
                 <TableCell align="left">
-                  ${coin.current_price.toLocaleString()}
+                  ${coin.currentPrice.toLocaleString()}
                 </TableCell>
                 <TableCell
                   align="left"
                   className={
-                    coin.price_change_percentage_24h >= 0
+                    coin.priceChangePercentage24h >= 0
                       ? "text-green-600"
                       : "text-red-600"
                   }
                 >
-                  {formatNumber(coin.price_change_24h)} (
-                  {formatNumber(coin.price_change_percentage_24h)}%)
+                  {formatNumber(coin.priceChange24h)} (
+                  {formatNumber(coin.priceChangePercentage24h)}%)
                 </TableCell>
                 <TableCell align="left">
-                  {formatCurrency(coin.market_cap)}
+                  {formatCurrency(coin.marketCap)}
                 </TableCell>
                 <TableCell align="left">
-                  {formatCurrency(coin.total_volume)}
+                  {formatCurrency(coin.totalVolume)}
                 </TableCell>
               </TableRow>
             ))

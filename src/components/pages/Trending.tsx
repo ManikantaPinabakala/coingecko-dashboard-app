@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { getTrending, getMarkets } from "../api/coingecko";
+import { getTrending, getMarkets } from "../../api/coingecko";
 import HighlightCard from "@/components/shared/HighlightCard";
 import { AppLoader } from "@/components/shared/Loader";
 import { Button } from "@/components/ui/button";
+import type { CoinData, TrendingCoinData } from "@/types/typeDefinitions";
 
 export default function Trending() {
   const {
@@ -11,7 +12,7 @@ export default function Trending() {
     isError: trendingDataError,
     error: trendingDataErrorDetails,
     refetch: refetchTrendingData,
-  } = useQuery({
+  } = useQuery<TrendingCoinData[]>({
     queryKey: ["trending"],
     queryFn: getTrending,
     staleTime: 5 * 60 * 1000,
@@ -23,7 +24,7 @@ export default function Trending() {
     isError: marketDataError,
     error: marketDataErrorDetails,
     refetch: refetchMarketData,
-  } = useQuery({
+  } = useQuery<CoinData[]>({
     queryKey: ["markets"],
     queryFn: () => getMarkets(),
     staleTime: 5 * 60 * 1000,
@@ -66,44 +67,28 @@ export default function Trending() {
   }
 
   const topGainers = marketData
-    ?.sort(
-      (a: any, b: any) =>
-        b.price_change_percentage_24h - a.price_change_percentage_24h
-    )
+    ?.sort((a, b) => b.priceChangePercentage24h - a.priceChangePercentage24h)
     .slice(0, 5);
   const topLosers = marketData
-    ?.sort(
-      (a: any, b: any) =>
-        a.price_change_percentage_24h - b.price_change_percentage_24h
-    )
+    ?.sort((a, b) => a.priceChangePercentage24h - b.priceChangePercentage24h)
     .slice(0, 5);
   const highestVolume = marketData
-    ?.sort((a: any, b: any) => b.total_volume - a.total_volume)
+    ?.sort((a, b) => b.totalVolume - a.totalVolume)
     .slice(0, 5);
   const top7dPerformers = marketData
     ?.sort(
-      (a: any, b: any) =>
-        b.price_change_percentage_7d_in_currency -
-        a.price_change_percentage_7d_in_currency
+      (a, b) =>
+        b.priceChangePercentage7dInCurrency -
+        a.priceChangePercentage7dInCurrency
     )
     .slice(0, 5);
   const top30dPerformers = marketData
     ?.sort(
-      (a: any, b: any) =>
-        b.price_change_percentage_30d_in_currency -
-        a.price_change_percentage_30d_in_currency
+      (a, b) =>
+        b.priceChangePercentage30dInCurrency -
+        a.priceChangePercentage30dInCurrency
     )
     .slice(0, 5);
-  const enrichedTrendingData = trendingData?.coins
-    .slice(0, 5)
-    .map((trendingCoin: any) => ({
-      id: trendingCoin.item.id,
-      name: trendingCoin.item.name,
-      image: trendingCoin.item.thumb,
-      current_price: trendingCoin.item.data.price,
-      price_change_percentage_24h:
-        trendingCoin.item.data.price_change_percentage_24h.usd,
-    }));
 
   return (
     <div>
@@ -111,7 +96,7 @@ export default function Trending() {
       <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <HighlightCard
           title="Trending Coins"
-          data={enrichedTrendingData}
+          data={trendingData}
           isLoading={trendingDataLoading}
         />
         <HighlightCard

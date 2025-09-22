@@ -7,7 +7,6 @@ import {
 } from "react-router-dom";
 import Markets from "./pages/Markets";
 import Trending from "./pages/Trending";
-import CoinDetails from "./pages/CoinDetails";
 
 import "./App.css";
 
@@ -25,7 +24,6 @@ function App() {
         <Route path="/" element={<Navigate to="/markets" replace />} />
         <Route path="/markets" element={<Markets />} />
         <Route path="/trending" element={<Trending />} />
-        <Route path="/coin/:id" element={<CoinDetails />} />
       </Routes>
     </Router>
   );

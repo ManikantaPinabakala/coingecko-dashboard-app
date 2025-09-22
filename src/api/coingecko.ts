@@ -8,18 +8,25 @@ const api = axios.create({
   },
 });
 
-export const getMarkets = async (page: number = 1) => {
+export const getMarkets = async (page: number = 1, search: string = "") => {
   const res = await api.get("/coins/markets", {
     params: {
       vs_currency: "usd",
       order: "market_cap_desc",
-      per_page: 50,
+      per_page: 20, // adjust page size
       page,
       price_change_percentage: "24h",
       sparkline: false,
     },
   });
 
+  if (search) {
+    return res.data.filter(
+      (coin: any) =>
+        coin.name.toLowerCase().includes(search.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(search.toLowerCase())
+    );
+  }
   return res.data;
 };
 
